@@ -100,11 +100,23 @@ public class ChatClient extends JFrame{
 	}
 	
 	public void send(String msg) {
-		
+		try {
+			buffw.write(msg + "\n");
+			buffw.flush();
+		} catch (IOException e) {			
+			e.printStackTrace();
+		}		
 	}
 	
 	public void listen() {
+		String msg = null;
 		
+		try {
+			msg = buffr.readLine();
+			area.append(msg + "\n");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static void main(String[] args) {
