@@ -4,6 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.Choice;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.net.Socket;
 
 import javax.swing.JButton;
@@ -48,6 +52,25 @@ public class ChatClient extends JFrame{
 		setBounds(100, 100, 300, 400);
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
+		bt.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				connect();
+			}
+		});
+		
+		t_input.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				
+			}
+		});
+		
+	}
+	
+	
+	public void connect() {
 		
 	}
 	
