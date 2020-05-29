@@ -1,6 +1,8 @@
 package network.uni;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.ServerSocket;
 import java.util.Vector;
 
@@ -38,7 +40,13 @@ public class GUIServer extends JFrame implements Runnable{
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
-		
+		bt.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				thread = new Thread(GUIServer.this);
+				thread.start();
+			}
+		});
 		
 			
 	}
