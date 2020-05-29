@@ -72,7 +72,13 @@ public class ChatClient extends JFrame{
 		t_input.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				
+				int key = e.getKeyCode();
+				if(key == KeyEvent.VK_ENTER) {
+					String msg = t_input.getText();
+					send(msg);
+					t_input.setText("");
+					listen();
+				}
 			}
 		});
 		
@@ -90,6 +96,14 @@ public class ChatClient extends JFrame{
 			e.printStackTrace();
 		}
 		
+		
+	}
+	
+	public void send(String msg) {
+		
+	}
+	
+	public void listen() {
 		
 	}
 	
