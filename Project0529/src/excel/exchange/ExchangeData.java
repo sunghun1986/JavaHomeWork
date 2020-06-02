@@ -254,6 +254,8 @@ public class ExchangeData extends JFrame implements ActionListener{
 	public void convertXMLToExcel() {
 		//javaSE에는 자체 지원하는 파서가 있다!!
 		SAXParserFactory factory = SAXParserFactory.newInstance();
+		FileOutputStream fos = null;//빈파일 생성용 스트림!!
+		
 		try {
 			SAXParser parser = factory.newSAXParser();//파서생성!
 			MyXMLHandler handler = new MyXMLHandler();
@@ -266,12 +268,44 @@ public class ExchangeData extends JFrame implements ActionListener{
 			
 			parser.parse(source , handler);
 			
+			//파싱이 완료되면, 엑셀로 출력
+			int ans = chooser.showSaveDialog(this);			
+			
+			if(ans == JFileChooser.APPROVE_OPTION) {
+				File file = chooser.getSelectedFile();
+				
+				//엑셀 내용 구성하기!!
+				HSSFWorkbook book = new HSSFWorkbook();
+				HSSFSheet sheet = book.createSheet();//쉬트생성
+				//핸들러가 파싱의 결과로 담아놓은 리스트 만큼 row를 생성!!
+				for(int i = 0; i < handler.list.size(); i++) {
+					HSSFRow row = sheet.createRow(i);//row(행) 생성
+					Lang lang = handler.list.get(i);
+					row.createCell(0).setCellValue(lang.getName());//name
+					row.createCell(1).setCellValue(lang.getVersion());//version
+					row.createCell(2).setCellValue(lang.getVendor());//vendor
+				}
+				
+				//엑셀을 파일로 출력!!
+				book.write(fos = new FileOutputStream(file));
+				
+			}
+			JOptionPane.showMessageDialog(this, "생성완료");
+			
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		} catch (SAXException e) {
 			e.printStackTrace();
 		} catch (IOException e) {			
 			e.printStackTrace();
+		}finally {
+			if(fos != null) {
+				try {
+					fos.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	
