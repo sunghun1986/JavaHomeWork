@@ -23,10 +23,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.xml.sax.SAXException;
 
 import excel.ConnectionManager;
 
@@ -49,7 +53,7 @@ public class ExchangeData extends JFrame implements ActionListener{
 
 		table = new JTable(model = new EmpModel());
 		scroll = new JScrollPane(table);
-		xmlArea = new JTextArea();
+		xmlArea = new JTextArea("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		jsonArea = new JTextArea();
 		bt_test = new JButton("엑셀파일만들기");
 		bt_db = new JButton("DB를 엑셀로 저장");
@@ -100,7 +104,7 @@ public class ExchangeData extends JFrame implements ActionListener{
 		}else if(obj == bt_db) {
 			convertDBToExcel();
 		}else if(obj == bt_xml) {
-			
+			convertXMLToExcel();
 		}else if(obj == bt_json) {
 			
 		}
@@ -241,6 +245,23 @@ public class ExchangeData extends JFrame implements ActionListener{
 				}
 			}
 			
+		}
+	}
+	
+	//XML을 엑셀로 변환하여 저장!!
+	public void convertXMLToExcel() {
+		//javaSE에는 자체 지원하는 파서가 있다!!
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		try {
+			SAXParser parser = factory.newSAXParser();//파서생성!
+			
+			//파싱준비완료 파싱 시작!
+			
+			
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
 		}
 	}
 	
