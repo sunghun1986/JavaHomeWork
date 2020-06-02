@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -15,6 +17,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -40,6 +43,7 @@ public class ExchangeData extends JFrame implements ActionListener{
 	JButton bt_json;
 	String path = "C:/Users/tjoeun/git/JavaHomeWork/Project0529/data/";
 	EmpModel model;
+	JFileChooser chooser;
 	
 	public ExchangeData() {
 
@@ -51,6 +55,7 @@ public class ExchangeData extends JFrame implements ActionListener{
 		bt_db = new JButton("DB를 엑셀로 저장");
 		bt_xml = new JButton("XML를 엑셀로 저장");
 		bt_json = new JButton("JSON를 엑셀로 저장");
+		chooser = new JFileChooser(path);
 		
 		//스타일적용
 		table.setPreferredSize(new Dimension(330,500));
@@ -66,6 +71,8 @@ public class ExchangeData extends JFrame implements ActionListener{
 		add(bt_db);
 		add(bt_xml);
 		add(bt_json);
+		
+		loadDB();
 		
 		setSize(1200, 600);
 		setVisible(true);
@@ -91,7 +98,7 @@ public class ExchangeData extends JFrame implements ActionListener{
 		if(obj == bt_test) {
 			createExcel();
 		}else if(obj == bt_db) {
-			
+			convertDBToExcel();
 		}else if(obj == bt_xml) {
 			
 		}else if(obj == bt_json) {
@@ -182,6 +189,59 @@ public class ExchangeData extends JFrame implements ActionListener{
 		}
 		
 		
+	}
+	
+	//데이터베이스를 엑셀로 저장하기!!
+	public void convertDBToExcel() {
+		int ans = chooser.showSaveDialog(this);
+		FileOutputStream fos = null;//빈파일 만들기위한 파일출력 스트림
+		
+		if(ans == JFileChooser.APPROVE_OPTION) {
+			File file = chooser.getSelectedFile();//유저가 저장할 파일명!!
+			
+			//위의 파일명으로 엑셀 생성하자!!
+			//먼제 비어있는 엑셀 생성!!
+			HSSFWorkbook book = new HSSFWorkbook();
+			
+			//파일로 저장하기 전에 , 내용을 채워넣자!
+			HSSFSheet sheet = book.createSheet();//비어있는 쉬트 생성!!
+			
+			//ArrayList에 들어있는 데이터 수만큼 엑셀의 row도 생성!!!
+			
+			for(int i = 0; i < model.list.size(); i++) {
+				
+				HSSFRow row = sheet.createRow(i);
+				Emp emp = model.list.get(i);
+				
+				row.createCell(0).setCellValue(emp.getEmpno());//empno
+				row.createCell(1).setCellValue(emp.getEname());//ename
+				row.createCell(2).setCellValue(emp.getJob());//job
+				row.createCell(3).setCellValue(emp.getMgr());//mgr
+				row.createCell(4).setCellValue(emp.getHiredate());//hiredate
+				row.createCell(5).setCellValue(emp.getSal());//sal
+				row.createCell(6).setCellValue(emp.getComm());//comm
+				row.createCell(7).setCellValue(emp.getDeptno());//deptno
+			}
+			
+			//채워진 엑셀을 실제 물리적 파일로 생성!!!
+			try {
+				book.write(fos = new FileOutputStream(file));
+				JOptionPane.showMessageDialog(this, "파일 생성 완료!");
+			} catch (FileNotFoundException e) {			
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}finally {
+				if(fos != null) {
+					try {
+						fos.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			
+		}
 	}
 	
 	public static void main(String[] args) {
