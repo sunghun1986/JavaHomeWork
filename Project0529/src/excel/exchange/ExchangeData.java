@@ -2,6 +2,7 @@ package excel.exchange;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -15,6 +16,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -31,6 +33,8 @@ import javax.xml.parsers.SAXParserFactory;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -67,6 +71,7 @@ public class ExchangeData extends JFrame implements ActionListener{
 		table.setPreferredSize(new Dimension(330,500));
 		xmlArea.setPreferredSize(new Dimension(330,500));
 		jsonArea.setPreferredSize(new Dimension(330,500));
+		jsonArea.setFont(new Font("돋움" , Font.BOLD , 20));
 		
 		//조립
 		setLayout(new FlowLayout());
@@ -108,7 +113,7 @@ public class ExchangeData extends JFrame implements ActionListener{
 		}else if(obj == bt_xml) {
 			convertXMLToExcel();
 		}else if(obj == bt_json) {
-			
+			convertJsonToExcel();
 		}
 	}
 	//엑셀 파일을 자바 프로그래밍적으로 생성해보자!!(내용도 구성하고...)
@@ -309,12 +314,81 @@ public class ExchangeData extends JFrame implements ActionListener{
 		}
 	}
 	
+	public void convertJsonToExcel() {
+		//json 파싱은 외부라이브러리인 google json simple 이용하겠다
+		JSONParser jsonParser = new JSONParser();
+		FileOutputStream fos = null;
+		
+		try {
+			//파싱 한 이후부터는 스트링에 불과한 데이터가 객체화 되서
+			//객체처림 사용이 가능
+			
+			JSONObject jsonObject = (JSONObject) jsonParser.parse(jsonArea.getText());
+			
+			String name = (String)jsonObject.get("name");
+			long price = (Long)jsonObject.get("price");//unBoxing	
+			String color = (String)jsonObject.get("color");
+			
+			ArrayList<Flower> list = new ArrayList<Flower>();
+			Flower flower = new Flower();
+			flower.setName(name);
+			flower.setPrice((int)price);
+			flower.setColor(color);
+			
+			list.add(flower);
+			
+			//엑셀 생성하기!!!
+			HSSFWorkbook book = new HSSFWorkbook();
+			HSSFSheet sheet = book.createSheet();
+			
+			for(int i = 0; i < list.size(); i++) {
+				Flower obj = list.get(i);//리스트에서 VO꺼내기
+				HSSFRow row = sheet.createRow(i);//row생성
+				row.createCell(0).setCellValue(obj.getName()); //name
+				row.createCell(1).setCellValue(obj.getPrice()); // price
+				row.createCell(2).setCellValue(obj.getColor()); //color
+			}			
+			//내용을 모두 채운 시점 이므로 엑셀을 파일로 생성하자!!
+			int ans = chooser.showSaveDialog(this);
+			if(ans == JFileChooser.APPROVE_OPTION) {
+				File file = chooser.getSelectedFile();				
+				book.write(file);
+				JOptionPane.showMessageDialog(this, "파일생성함");
+				//만들어진 파일의 디렉토리를 열어주는 친절함을 베풀자!!
+//				chooser.showOpenDialog(this);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (org.json.simple.parser.ParseException e) {
+			e.printStackTrace();
+		}finally {
+			if(fos != null) {
+				try {
+					fos.close();
+				} catch (IOException e) {				
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
 	public static void main(String[] args) {
 		new ExchangeData();
 	}
 
 	
 }
+
+/*
+ json 샘플
+ 
+ {
+  "name":"후리지아",
+  "price" : 6000 , 
+  "color" : "red"
+} 
+
+ */
 
 
 
