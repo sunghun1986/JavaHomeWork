@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,6 +31,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import excel.ConnectionManager;
@@ -254,13 +256,21 @@ public class ExchangeData extends JFrame implements ActionListener{
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		try {
 			SAXParser parser = factory.newSAXParser();//파서생성!
+			MyXMLHandler handler = new MyXMLHandler();
 			
 			//파싱준비완료 파싱 시작!
+//			parser.parse(new File(path+"/aaa.xml"), handler);
 			
+			//파일이 아닌 그냥 스트링을 대상으로 xml파싱을 시도해보자~!~!
+			InputSource source = new InputSource(new StringReader(xmlArea.getText()));
+			
+			parser.parse(source , handler);
 			
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (IOException e) {			
 			e.printStackTrace();
 		}
 	}
